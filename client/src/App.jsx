@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ThemeProvider, createTheme } from "@mui/material";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { faIR } from "date-fns/locale";
@@ -36,50 +36,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Create theme
-const theme = createTheme({
-  direction: "rtl",
-  typography: {
-    fontFamily: "dana",
-  },
-  palette: {
-    primary: {
-      main: "#1976d2",
-    },
-    secondary: {
-      main: "#dc004e",
-    },
-  },
-  components: {
-    MuiButton: {
-      defaultProps: {
-        variant: "contained",
-        disableElevation: true,
-      },
-    },
-    MuiTextField: {
-      defaultProps: {
-        variant: "filled",
-      },
-    },
-    MuiSelect: {
-      defaultProps: {
-        variant: "filled",
-      },
-    },
-    MuiFormControl: {
-      defaultProps: {
-        variant: "filled",
-      },
-    },
-    MuiAppBar: {
-      defaultProps: {
-        elevation: 0,
-      },
-    },
-  },
-});
-
 const rtlCache = createCache({
   key: "mui-rtl",
   stylisPlugins: [prefixer, rtlPlugin],
@@ -87,9 +43,9 @@ const rtlCache = createCache({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <CacheProvider value={rtlCache}>
-        <ThemeProvider theme={theme}>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <CacheProvider value={rtlCache}>
           <LocalizationProvider
             dateAdapter={AdapterDateFns}
             adapterLocale={faIR}
@@ -188,9 +144,9 @@ function App() {
               </Router>
             </SnackbarProvider>
           </LocalizationProvider>
-        </ThemeProvider>
-      </CacheProvider>
-    </QueryClientProvider>
+        </CacheProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

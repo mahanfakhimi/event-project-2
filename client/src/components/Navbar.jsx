@@ -15,20 +15,53 @@ import {
   useTheme,
   useMediaQuery,
   ListItemButton,
+  Menu,
+  MenuItem,
+  Box,
 } from "@mui/material";
 import {
   Add,
   Person,
   Menu as MenuIcon,
   AdminPanelSettings,
+  Palette,
 } from "@mui/icons-material";
 import { useUser } from "../api/auth";
+import { useThemeContext } from "../contexts/ThemeContext";
+
+const themeColors = [
+  { name: "آبی", value: "#1976d2" },
+  { name: "سبز", value: "#2e7d32" },
+  { name: "بنفش", value: "#9c27b0" },
+  { name: "نارنجی", value: "#ed6c02" },
+  { name: "قرمز", value: "#d32f2f" },
+  { name: "صورتی", value: "#c2185b" },
+  { name: "فیروزه‌ ای", value: "#0097a7" },
+  { name: "زرد", value: "#fbc02d" },
+  { name: "قهوه‌ای", value: "#795548" },
+  { name: "مشکی", value: "#212121" },
+];
 
 const Navbar = () => {
   const { data: user } = useUser();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [colorMenuAnchor, setColorMenuAnchor] = useState(null);
+  const { changePrimaryColor } = useThemeContext();
+
+  const handleColorMenuOpen = (event) => {
+    setColorMenuAnchor(event.currentTarget);
+  };
+
+  const handleColorMenuClose = () => {
+    setColorMenuAnchor(null);
+  };
+
+  const handleColorChange = (color) => {
+    changePrimaryColor(color);
+    handleColorMenuClose();
+  };
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -168,6 +201,55 @@ const Navbar = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.75 }}
             >
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <IconButton
+                  onClick={handleColorMenuOpen}
+                  color="inherit"
+                  sx={{ color: "gray.800" }}
+                >
+                  <Palette />
+                </IconButton>
+              </motion.div>
+
+              <Menu
+                anchorEl={colorMenuAnchor}
+                open={Boolean(colorMenuAnchor)}
+                onClose={handleColorMenuClose}
+                PaperProps={{
+                  sx: {
+                    mt: 1,
+                    minWidth: 150,
+                    boxShadow: "0 0 10px #ddd",
+                  },
+                }}
+              >
+                {themeColors.map((color) => (
+                  <MenuItem
+                    key={color.name}
+                    onClick={() => handleColorChange(color.value)}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "50%",
+                        backgroundColor: color.value,
+                        border: "1px solid #ccc",
+                      }}
+                    />
+                    {color.name}
+                  </MenuItem>
+                ))}
+              </Menu>
+
               {user ? (
                 <>
                   {user.isAdmin && (
