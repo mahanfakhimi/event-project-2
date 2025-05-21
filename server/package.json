@@ -1,0 +1,14 @@
+{
+  "name": "server",
+  "type": "module",
+  "scripts": {
+    "start": "node --watch --env-file=.env src/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.2",
+    "bcryptjs": "^3.0.2",
+    "hono": "^4.7.10",
+    "mongoose": "^8.15.0",
+    "nodemailer": "^7.0.3"
+  }
+}
