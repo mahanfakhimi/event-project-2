@@ -154,7 +154,7 @@ const Register = () => {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ delay: 0.4 }}
             >
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <Alert severity="error">
                 {sendOTPMutation.error?.response?.data?.error ||
                   verifyOTPMutation.error?.response?.data?.error ||
                   "خطا در ثبت نام"}

@@ -25,6 +25,7 @@
 body {
   direction: rtl;
   background-color: #e3e3e3 !important;
+  overflow-x: hidden;
 }
 
 a {

@@ -81,7 +81,7 @@ const Login = () => {
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
               transition={{ delay: 0.3 }}
             >
-              <Alert severity="error" sx={{ mb: 2 }}>
+              <Alert severity="error">
                 {loginMutation.error?.response?.data?.error ||
                   "خطا در ورود به سیستم"}
               </Alert>

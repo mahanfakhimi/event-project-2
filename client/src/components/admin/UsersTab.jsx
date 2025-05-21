@@ -80,12 +80,26 @@ const UsersTab = () => {
   };
 
   const columns = [
-    { field: "name", headerName: "نام", flex: 1 },
-    { field: "email", headerName: "ایمیل", flex: 1 },
+    {
+      field: "name",
+      headerName: "نام",
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "email",
+      headerName: "ایمیل",
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+    },
     {
       field: "isVerified",
       headerName: "تایید شده",
       flex: 1,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => (
         <Typography color={params.value ? "success.main" : "error.main"}>
           {params.value ? "بله" : "خیر"}
@@ -96,8 +110,10 @@ const UsersTab = () => {
       field: "isAdmin",
       headerName: "ادمین",
       flex: 1,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => (
-        <Typography color={params.value ? "primary.main" : "text.secondary"}>
+        <Typography color={params.value ? "success.main" : "text.secondary"}>
           {params.value ? "بله" : "خیر"}
         </Typography>
       ),
@@ -106,6 +122,8 @@ const UsersTab = () => {
       field: "actions",
       headerName: "عملیات",
       flex: 1,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => (
         <Box>
           <IconButton
@@ -115,6 +133,7 @@ const UsersTab = () => {
           >
             <EditIcon />
           </IconButton>
+
           <IconButton
             onClick={() => handleDeleteClick(params.row)}
             color="error"
@@ -133,28 +152,46 @@ const UsersTab = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Box sx={{ height: 600, width: "100%" }}>
+      <Box
+        sx={{
+          height: 600,
+          width: "100%",
+          overflow: "auto",
+          "& .MuiDataGrid-root": {
+            minWidth: 800,
+          },
+          "& .MuiDataGrid-cell": {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          },
+        }}
+      >
         <DataGrid
-          rows={users || []}
+          rows={
+            Array.isArray(users)
+              ? users.map((user) => ({
+                  ...user,
+                  id: user._id,
+                }))
+              : []
+          }
           columns={columns}
           pageSize={10}
           rowsPerPageOptions={[10]}
-          checkboxSelection
           disableSelectionOnClick
           loading={isLoading}
-          getRowId={(row) => row._id}
-          sx={{
-            "& .MuiDataGrid-cell:focus": {
-              outline: "none",
-            },
-          }}
         />
       </Box>
 
       {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-        <DialogTitle>ویرایش کاربر</DialogTitle>
+      <Dialog
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        slotProps={{ paper: { sx: { minWidth: 500 } } }}
+      >
         <DialogContent>
+          <p className="text-xl">ویرایش کاربر</p>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
             <TextField
               label="نام"
@@ -172,56 +209,73 @@ const UsersTab = () => {
               }
               fullWidth
             />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={formData.isVerified}
-                  onChange={(e) =>
-                    setFormData({ ...formData, isVerified: e.target.checked })
-                  }
-                />
-              }
-              label="تایید شده"
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={formData.isAdmin}
-                  onChange={(e) =>
-                    setFormData({ ...formData, isAdmin: e.target.checked })
-                  }
-                />
-              }
-              label="ادمین"
-            />
+
+            <div className="flex items-center">
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.isVerified}
+                    onChange={(e) =>
+                      setFormData({ ...formData, isVerified: e.target.checked })
+                    }
+                  />
+                }
+                label="تایید شده"
+              />
+
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.isAdmin}
+                    onChange={(e) =>
+                      setFormData({ ...formData, isAdmin: e.target.checked })
+                    }
+                  />
+                }
+                label="ادمین"
+              />
+            </div>
           </Box>
+
+          <div className="flex items-center gap-x-4 mt-4">
+            <Button
+              color="error"
+              fullWidth
+              onClick={() => setEditDialogOpen(false)}
+            >
+              انصراف
+            </Button>
+
+            <Button
+              fullWidth
+              onClick={handleEditSubmit}
+              variant="contained"
+              color="primary"
+            >
+              ذخیره
+            </Button>
+          </div>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)}>انصراف</Button>
-          <Button
-            onClick={handleEditSubmit}
-            variant="contained"
-            color="primary"
-          >
-            ذخیره
-          </Button>
-        </DialogActions>
       </Dialog>
 
       {/* Delete Dialog */}
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
+        slotProps={{ paper: { sx: { minWidth: 500 } } }}
       >
-        <DialogTitle>حذف کاربر</DialogTitle>
         <DialogContent>
-          <Typography>
-            آیا از حذف کاربر {selectedUser?.name} اطمینان دارید؟
-          </Typography>
+          <p className="text-xl mb-2">حذف کاربر</p>
+          <p>آیا از حذف کاربر {selectedUser?.name} اطمینان دارید؟</p>
         </DialogContent>
+
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>انصراف</Button>
+          <Button fullWidth onClick={() => setDeleteDialogOpen(false)}>
+            انصراف
+          </Button>
+
           <Button
+            fullWidth
             onClick={handleDeleteSubmit}
             variant="contained"
             color="error"

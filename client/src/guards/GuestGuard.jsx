@@ -8,7 +8,7 @@ const GuestGuard = ({ children }) => {
 
   useEffect(() => {
     if (!isLoading && user) {
-      navigate("/profile");
+      navigate("/");
     }
   }, [user, isLoading, navigate]);
 

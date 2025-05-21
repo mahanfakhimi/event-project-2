@@ -3,13 +3,17 @@ import apiClient from "./client";
 
 // Get current user profile
 export const useUser = () => {
+  const queryClient = useQueryClient();
+
   return useQuery({
     queryKey: ["user"],
     queryFn: async () => {
       const { data } = await apiClient.get("/auth/profile");
       return data;
     },
-    retry: false,
+    onSuccess(data) {
+      queryClient.setQueryData(["user"], data);
+    },
   });
 };
 
@@ -94,6 +98,8 @@ export const useLogout = () => {
       return data.data;
     },
     onSuccess: () => {
+      queryClient.setQueryData(["user"], null);
+      queryClient.removeQueries({ queryKey: ["user"] });
       queryClient.clear();
     },
   });

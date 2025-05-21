@@ -124,7 +124,7 @@ const PollDetails = () => {
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ delay: 0.5 }}
           >
-            <Alert severity="info" className="mb-4">
+            <Alert severity="error" className="mb-4">
               این نظرسنجی به پایان رسیده است
             </Alert>
           </motion.div>
@@ -137,7 +137,7 @@ const PollDetails = () => {
             transition={{ delay: 0.5 }}
           >
             <Alert severity="info" className="mb-4">
-              شما قبلاً در این نظرسنجی شرکت کرده‌اید
+              شما در این نظرسنجی شرکت کرده‌اید
             </Alert>
           </motion.div>
         )}
@@ -273,7 +273,7 @@ const PollDetails = () => {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}
           transition={{ delay: 1.2 }}
-          className="flex items-center justify-between"
+          className="flex items-center justify-between mt-2"
         >
           <p className="mt-4 text-gray-500">
             تعداد کل آراء: {results.totalVotes}

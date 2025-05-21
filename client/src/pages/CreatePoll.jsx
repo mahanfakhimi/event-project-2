@@ -108,7 +108,7 @@ const CreatePoll = () => {
       initial={{ opacity: 0 }}
       animate={isInView ? { opacity: 1 } : { opacity: 0 }}
       transition={{ duration: 0.5 }}
-      className="max-w-2xl mx-auto p-8"
+      className="max-w-2xl mx-auto p-4 lg:p-8"
     >
       <motion.div
         initial={{ y: 50, opacity: 0 }}

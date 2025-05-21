@@ -2,6 +2,7 @@
 import { motion, useInView } from "motion/react";
 import { useNavigate, Link as RouterLink } from "react-router";
 import { Button, Chip } from "@mui/material";
+import { ExitToApp } from "@mui/icons-material";
 import { useLogout, useUser } from "../api/auth";
 import { useUserVotedPolls } from "../api/polls";
 import { format } from "date-fns";
@@ -94,6 +95,7 @@ const Profile = () => {
                 disabled={logoutMutation.isLoading}
                 sx={{ px: 5, borderRadius: 50 }}
                 color="error"
+                startIcon={<ExitToApp />}
               >
                 خروج از حساب کاربری
               </Button>

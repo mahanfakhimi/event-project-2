@@ -18,7 +18,10 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useAdminPolls, useUpdatePoll, useDeletePoll } from "../../api/admin";
 import { useSnackbar } from "notistack";
-import { format } from "date-fns-jalali";
+import { toJalali } from "../../utils/date";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFnsJalali } from "@mui/x-date-pickers/AdapterDateFnsJalali";
 
 const PollsTab = () => {
   const { data: polls, isLoading } = useAdminPolls();
@@ -40,7 +43,7 @@ const PollsTab = () => {
     setFormData({
       title: poll.title,
       description: poll.description,
-      endDate: new Date(poll.endDate).toISOString().split("T")[0],
+      endDate: new Date(poll.endDate),
       isActive: poll.isActive,
     });
     setEditDialogOpen(true);
@@ -57,7 +60,7 @@ const PollsTab = () => {
         id: selectedPoll._id,
         pollData: {
           ...formData,
-          endDate: new Date(formData.endDate),
+          endDate: formData.endDate,
         },
       });
       enqueueSnackbar("نظرسنجی با موفقیت بروزرسانی شد", {
@@ -87,25 +90,46 @@ const PollsTab = () => {
   };
 
   const columns = [
-    { field: "title", headerName: "عنوان", flex: 1 },
-    { field: "description", headerName: "توضیحات", flex: 1 },
+    {
+      field: "title",
+      headerName: "عنوان",
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "description",
+      headerName: "توضیحات",
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+    },
     {
       field: "createdBy",
       headerName: "سازنده",
       flex: 1,
-      valueGetter: (params) => params.row.createdBy?.name || "نامشخص",
+      align: "center",
+      headerAlign: "center",
+      valueGetter: (params) => {
+        return params?.name;
+      },
     },
     {
       field: "endDate",
       headerName: "تاریخ پایان",
       flex: 1,
-      valueGetter: (params) =>
-        format(new Date(params.row.endDate), "yyyy/MM/dd"),
+      align: "center",
+      headerAlign: "center",
+      valueGetter: (params) => {
+        return toJalali(params);
+      },
     },
     {
       field: "isActive",
       headerName: "فعال",
       flex: 1,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => (
         <Typography color={params.value ? "success.main" : "error.main"}>
           {params.value ? "بله" : "خیر"}
@@ -116,6 +140,8 @@ const PollsTab = () => {
       field: "actions",
       headerName: "عملیات",
       flex: 1,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => (
         <Box>
           <IconButton
@@ -125,6 +151,7 @@ const PollsTab = () => {
           >
             <EditIcon />
           </IconButton>
+
           <IconButton
             onClick={() => handleDeleteClick(params.row)}
             color="error"
@@ -143,28 +170,57 @@ const PollsTab = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Box sx={{ height: 600, width: "100%" }}>
+      <Box
+        sx={{
+          height: 600,
+          width: "100%",
+          overflow: "auto",
+          "& .MuiDataGrid-root": {
+            minWidth: 800,
+          },
+          "& .MuiDataGrid-cell": {
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          },
+          "& .MuiDataGrid-cell[data-field='description']": {
+            maxHeight: "100px !important",
+            overflow: "auto",
+            whiteSpace: "normal",
+            lineHeight: "1.5",
+            padding: "8px",
+            display: "block",
+            textAlign: "left",
+          },
+        }}
+      >
         <DataGrid
-          rows={polls || []}
+          rows={
+            Array.isArray(polls)
+              ? polls.map((poll) => ({
+                  ...poll,
+                  id: poll._id,
+                  createdBy: poll.createdBy || { name: "نامشخص" },
+                  endDate: poll.endDate || new Date().toISOString(),
+                }))
+              : []
+          }
           columns={columns}
           pageSize={10}
           rowsPerPageOptions={[10]}
-          checkboxSelection
           disableSelectionOnClick
           loading={isLoading}
-          getRowId={(row) => row._id}
-          sx={{
-            "& .MuiDataGrid-cell:focus": {
-              outline: "none",
-            },
-          }}
         />
       </Box>
 
       {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
-        <DialogTitle>ویرایش نظرسنجی</DialogTitle>
+      <Dialog
+        open={editDialogOpen}
+        onClose={() => setEditDialogOpen(false)}
+        slotProps={{ paper: { sx: { minWidth: 500 } } }}
+      >
         <DialogContent>
+          <p className="text-xl">ویرایش نظرسنجی</p>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 2 }}>
             <TextField
               label="عنوان"
@@ -184,18 +240,20 @@ const PollsTab = () => {
               multiline
               rows={4}
             />
-            <TextField
-              label="تاریخ پایان"
-              type="date"
-              value={formData.endDate}
-              onChange={(e) =>
-                setFormData({ ...formData, endDate: e.target.value })
-              }
-              fullWidth
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
+            <LocalizationProvider dateAdapter={AdapterDateFnsJalali}>
+              <DatePicker
+                label="تاریخ پایان"
+                value={formData.endDate}
+                onChange={(date) => setFormData({ ...formData, endDate: date })}
+                minDate={new Date()}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    variant: "filled",
+                  },
+                }}
+              />
+            </LocalizationProvider>
             <FormControlLabel
               control={
                 <Switch
@@ -207,34 +265,46 @@ const PollsTab = () => {
               }
               label="فعال"
             />
+
+            <div className="flex items-center gap-x-4">
+              <Button
+                color="error"
+                fullWidth
+                onClick={() => setEditDialogOpen(false)}
+              >
+                انصراف
+              </Button>
+
+              <Button
+                fullWidth
+                onClick={handleEditSubmit}
+                variant="contained"
+                color="primary"
+              >
+                ذخیره
+              </Button>
+            </div>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)}>انصراف</Button>
-          <Button
-            onClick={handleEditSubmit}
-            variant="contained"
-            color="primary"
-          >
-            ذخیره
-          </Button>
-        </DialogActions>
       </Dialog>
 
       {/* Delete Dialog */}
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
+        slotProps={{ paper: { sx: { minWidth: 500 } } }}
       >
-        <DialogTitle>حذف نظرسنجی</DialogTitle>
         <DialogContent>
-          <Typography>
-            آیا از حذف نظرسنجی {selectedPoll?.title} اطمینان دارید؟
-          </Typography>
+          <p className="text-xl mb-2">حذف نظرسنجی</p>
+          <p>آیا از حذف نظرسنجی {selectedPoll?.title} اطمینان دارید؟</p>
         </DialogContent>
+
         <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>انصراف</Button>
+          <Button fullWidth onClick={() => setDeleteDialogOpen(false)}>
+            انصراف
+          </Button>
           <Button
+            fullWidth
             onClick={handleDeleteSubmit}
             variant="contained"
             color="error"

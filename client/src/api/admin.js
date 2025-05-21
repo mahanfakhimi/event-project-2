@@ -1,18 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import apiClient from "./client";
 
-const adminApi = axios.create({
-  baseURL: "/api/admin",
-  withCredentials: true,
-});
-
-// Hooks for Users
 export const useUsers = () => {
   return useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const { data } = await adminApi.get("/users");
-      return data;
+      const { data } = await apiClient.get("/admin/users");
+      return Array.isArray(data) ? data : [];
     },
   });
 };
@@ -21,7 +15,7 @@ export const useUser = (id) => {
   return useQuery({
     queryKey: ["users", id],
     queryFn: async () => {
-      const { data } = await adminApi.get(`/users/${id}`);
+      const { data } = await apiClient.get(`/admin/users/${id}`);
       return data;
     },
     enabled: !!id,
@@ -32,7 +26,7 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, userData }) => {
-      const { data } = await adminApi.patch(`/users/${id}`, userData);
+      const { data } = await apiClient.patch(`/admin/users/${id}`, userData);
       return data;
     },
     onSuccess: () => {
@@ -45,7 +39,7 @@ export const useDeleteUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id) => {
-      const { data } = await adminApi.delete(`/users/${id}`);
+      const { data } = await apiClient.delete(`/admin/users/${id}`);
       return data;
     },
     onSuccess: () => {
@@ -59,7 +53,7 @@ export const useAdminPolls = () => {
   return useQuery({
     queryKey: ["admin-polls"],
     queryFn: async () => {
-      const { data } = await adminApi.get("/polls");
+      const { data } = await apiClient.get("/admin/polls");
       return data;
     },
   });
@@ -69,7 +63,7 @@ export const useAdminPoll = (id) => {
   return useQuery({
     queryKey: ["admin-polls", id],
     queryFn: async () => {
-      const { data } = await adminApi.get(`/polls/${id}`);
+      const { data } = await apiClient.get(`/admin/polls/${id}`);
       return data;
     },
     enabled: !!id,
@@ -80,7 +74,7 @@ export const useUpdatePoll = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, pollData }) => {
-      const { data } = await adminApi.patch(`/polls/${id}`, pollData);
+      const { data } = await apiClient.patch(`/admin/polls/${id}`, pollData);
       return data;
     },
     onSuccess: () => {
@@ -93,7 +87,7 @@ export const useDeletePoll = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id) => {
-      const { data } = await adminApi.delete(`/polls/${id}`);
+      const { data } = await apiClient.delete(`/admin/polls/${id}`);
       return data;
     },
     onSuccess: () => {
@@ -107,7 +101,7 @@ export const useAdminStats = () => {
   return useQuery({
     queryKey: ["admin-stats"],
     queryFn: async () => {
-      const { data } = await adminApi.get("/stats");
+      const { data } = await apiClient.get("/admin/stats");
       return data;
     },
   });

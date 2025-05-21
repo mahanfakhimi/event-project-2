@@ -25,7 +25,6 @@ import AdminPanel from "./pages/AdminPanel";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./guards/ProtectedRoute";
 import GuestGuard from "./guards/GuestGuard";
-import AdminRoute from "./components/AdminRoute";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -176,9 +175,9 @@ function App() {
                     <Route
                       path="/admin"
                       element={
-                        <AdminRoute>
+                        <ProtectedRoute isAdmin>
                           <AdminPanel />
-                        </AdminRoute>
+                        </ProtectedRoute>
                       }
                     />
 

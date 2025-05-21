@@ -16,14 +16,19 @@ import {
   useMediaQuery,
   ListItemButton,
 } from "@mui/material";
-import { Add, Person, Menu as MenuIcon } from "@mui/icons-material";
+import {
+  Add,
+  Person,
+  Menu as MenuIcon,
+  AdminPanelSettings,
+} from "@mui/icons-material";
 import { useUser } from "../api/auth";
 
 const Navbar = () => {
   const { data: user } = useUser();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const toggleDrawer = (open) => (event) => {
     if (
@@ -39,17 +44,37 @@ const Navbar = () => {
     ...(user?.isAdmin
       ? [
           {
+            text: "پنل مدیریت",
+            icon: <AdminPanelSettings />,
+            to: "/admin",
+          },
+          {
             text: "ایجاد نظرسنجی جدید",
             icon: <Add />,
             to: "/create",
           },
         ]
       : []),
-    {
-      text: "حساب کاربری",
-      icon: <Person />,
-      to: "/profile",
-    },
+    ...(user
+      ? [
+          {
+            text: "حساب کاربری",
+            icon: <Person />,
+            to: "/profile",
+          },
+        ]
+      : [
+          {
+            text: "ورود",
+            icon: <Person />,
+            to: "/login",
+          },
+          {
+            text: "ثبت نام",
+            icon: <Add />,
+            to: "/register",
+          },
+        ]),
   ];
 
   const drawer = (
@@ -143,41 +168,100 @@ const Navbar = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.75 }}
             >
-              {user?.isAdmin && (
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Button
-                    component={RouterLink}
-                    to="/create"
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Add />}
-                    className="bg-blue-600 hover:bg-blue-700"
-                    sx={{ borderRadius: 50 }}
-                  >
-                    ایجاد نظرسنجی جدید
-                  </Button>
-                </motion.div>
-              )}
+              {user ? (
+                <>
+                  {user.isAdmin && (
+                    <>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button
+                          component={RouterLink}
+                          to="/admin"
+                          variant="contained"
+                          color="primary"
+                          startIcon={<AdminPanelSettings />}
+                          className="bg-blue-600 hover:bg-blue-700"
+                          sx={{ borderRadius: 50 }}
+                        >
+                          پنل مدیریت
+                        </Button>
+                      </motion.div>
 
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  component={RouterLink}
-                  to="/profile"
-                  variant="contained"
-                  color="primary"
-                  startIcon={<Person />}
-                  className="bg-blue-600 hover:bg-blue-700"
-                  sx={{ borderRadius: 50 }}
-                >
-                  حساب کاربری
-                </Button>
-              </motion.div>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Button
+                          component={RouterLink}
+                          to="/create"
+                          variant="contained"
+                          color="primary"
+                          startIcon={<Add />}
+                          className="bg-blue-600 hover:bg-blue-700"
+                          sx={{ borderRadius: 50 }}
+                        >
+                          ایجاد نظرسنجی جدید
+                        </Button>
+                      </motion.div>
+                    </>
+                  )}
+
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      component={RouterLink}
+                      to="/profile"
+                      variant="contained"
+                      color="primary"
+                      startIcon={<Person />}
+                      className="bg-blue-600 hover:bg-blue-700"
+                      sx={{ borderRadius: 50 }}
+                    >
+                      حساب کاربری
+                    </Button>
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      component={RouterLink}
+                      to="/login"
+                      variant="contained"
+                      color="primary"
+                      startIcon={<Person />}
+                      className="bg-blue-600 hover:bg-blue-700"
+                      sx={{ borderRadius: 50 }}
+                    >
+                      ورود
+                    </Button>
+                  </motion.div>
+
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button
+                      component={RouterLink}
+                      to="/register"
+                      variant="contained"
+                      color="primary"
+                      startIcon={<Add />}
+                      className="bg-blue-600 hover:bg-blue-700"
+                      sx={{ borderRadius: 50 }}
+                    >
+                      ثبت نام
+                    </Button>
+                  </motion.div>
+                </>
+              )}
             </motion.div>
           )}
         </Toolbar>

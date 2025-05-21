@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import { motion } from "motion/react";
-import { Box, Grid, Paper, Typography, CircularProgress } from "@mui/material";
+import { Box, Grid, CircularProgress } from "@mui/material";
 import {
   People as PeopleIcon,
   Poll as PollIcon,
@@ -9,31 +9,24 @@ import {
   HowToVote as VoteIcon,
 } from "@mui/icons-material";
 
-const StatCard = ({ title, value, icon, color }) => {
+const StatCard = ({ title, value, icon, color, index }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.2, // هر کارت با 0.2 ثانیه تاخیر نسبت به قبلی
+      }}
     >
-      <Paper
-        sx={{
-          p: 3,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          borderRadius: 2,
-          boxShadow: 3,
-          height: "100%",
-        }}
-      >
+      <div className="text-center flex items-center justify-center flex-col">
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: 60,
-            height: 60,
+            width: 100,
+            height: 100,
             borderRadius: "50%",
             bgcolor: `${color}.light`,
             color: `${color}.main`,
@@ -42,13 +35,10 @@ const StatCard = ({ title, value, icon, color }) => {
         >
           {icon}
         </Box>
-        <Typography variant="h4" component="div" gutterBottom>
-          {value}
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          {title}
-        </Typography>
-      </Paper>
+
+        <p className="text-5xl">{value}</p>
+        <p className="text-gray-500">{title}</p>
+      </div>
     </motion.div>
   );
 };
@@ -103,15 +93,22 @@ const StatsTab = ({ stats, loading }) => {
   ];
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={3}>
-        {statItems.map((item, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <StatCard {...item} />
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
+    <motion.div
+      className="flex flex-wrap gap-24 justify-center items-center"
+      initial="hidden"
+      animate="visible"
+      variants={{
+        visible: {
+          transition: {
+            staggerChildren: 0.2,
+          },
+        },
+      }}
+    >
+      {statItems.map((item, index) => (
+        <StatCard key={item.title} {...item} index={index} />
+      ))}
+    </motion.div>
   );
 };
 
